@@ -1,0 +1,86 @@
+#!/bin/bash
+clear
+
+
+ponysay -W 180 +f gnupony <<<  $( uwuify <<<  "Hello, and welcom to The open-source team hiden project presentation UwU")
+
+cat <<EOF
+       _________
+      |_-_-_-_-_|
+      |_________|
+     /           \\
+    /             \\
+   /               \\
+  /      NAIVE      \\
+ / (a lire en verlan)\\
+(_____________________)
+ )___________________(
+(_____________________)
+|                     |
+|                     |
+|_____________________|
+(_____________________)
+|_____________________|
+(_____________________)
+|                     |
+|                     |
+\_____________________/
+ '-------------------'
+EOF
+read
+clear
+
+ponysay +f gnupony <<<  $( uwuify <<<  "now it's osc-tui time !")
+read
+clear
+ponysay +f gnupony <<<  $( uwuify <<<  "let's show a VM creation and destruction")
+read
+clear
+ponysay +f gnupony <<<  $( uwuify <<<  "search fonctionality")
+read
+clear
+ponysay +f gnupony <<<  $( uwuify <<<  "also reminder, I have to show minecraft stuff costum rule")
+read
+clear
+
+ponysay +f gnupony <<<  $( uwuify <<<  "Let me show you emacs.el")
+read
+clear
+
+ponysay +f gnupony <<<  $( uwuify <<<  "Did you like it ?")
+read
+clear
+
+ponysay +f gnupony <<<  $( figlet <<<  "UwU")
+read
+clear
+
+clear
+ponysay +f gnupony <<<  $( uwuify <<<  "some stuff with cURL")
+read
+
+clear
+cat << EOF
+like:
+curl -X POST "https://api.eu-west-2.outscale.com/api/v1/ReadImages" --user AK:SK --aws-sigv4 "osc" -d '{"Filters": { "AccountAliases": ["Outscale"], "ImageNames" : ["*buntu*"]}}' -H 'Content-Type: application/json' | jq
+EOF
+read
+
+clear
+toilet ^•ﻌ•^ | ponysay +f gnupony
+read
+clear
+
+ponysay +f gnupony <<<  $( uwuify <<<  "did you notice, that cURL is write c... URL, with lowercase 'c', and uppercase URL")
+read
+clear
+ponysay +f gnupony <<<  $( uwuify <<<  "anyway, let me show you libcurl")
+read
+
+clear
+ponysay +f gnupony <<<  $( uwuify <<<  "and that was all !")
+read
+
+clear
+ponysay +f gnupony <<<  $( uwuify <<<  "QUESTION ? (implicite you didn't ask question before))")
+read
