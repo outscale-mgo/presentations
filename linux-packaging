@@ -1,0 +1,343 @@
+#!/bin/bash
+
+slide()
+{
+    txt="$@"
+    clear
+    echo -e "$txt" | ponysay +f gnupony
+    read
+}
+
+slide "so let's start by the begining...\n" "what's a package ?\n" "is it a binary\n" "what's a binary\n" "what is code?\n" "how is a program executed\n"
+
+clear
+cat <<EOF
+Some stuff about memory
+0x00000000
+-----
+|Ker|
+|el |
+|---| <--- that's my computer RAM, and this is where my programs are store when executed...
+|Sys|		in the old days (like when tetsujin-28 go drama was still on TV, and attack no1 was not even crated)
+|tem|		program used to have access to the whole computer memory.
+|D  |
+|---|
+|ZSH|
+|   |						But in the futur when Zeta Gundam air on TV (85)
+|---|						Because developper are sub-humain-trash unable to create programs that share they memory space with another program
+|Ema|					        We create virtual memory (ok it's more Eightman (63) time in fact, but went mainstream in zeta gundam time).
+|cs |						      Let me show you:
+|---|							    /------------- That's my computer memory
+|Pul|							 00 <--- that's the beginning of my memory
+|sau|							----
+|dio|							|  |
+|   |						 2048 ->|--|
+|   |							|Pr| < that's where my program is store in the ram
+|   |							|  |   here between the adress 2048 and 6144, it's the program physical memory
+|   |						 6144 ->|--|
+|   |						        ----
+-----						        8192			  But my program think its memory look like this, it's the memory it manipulate
+0xffffffff														   /      so this whole fake memory,
+												 00			  /       is its "Virtual memory"
+												----			 /
+												|PD|  <------------------
+												|ra|
+												|ot|
+												|ga|
+												|  |
+											        ----
+											        8192
+
+							This is the diference between Physicall and Virtual Memory
+							If anything remmenber 1 thing: programs on modern architecture, run on they own memory space,
+							thinking they are alone.
+
+
+
+
+
+							(please don't talk about CPU cache)
+EOF
+read
+
+clear
+cat <<EOF
+
+		     How I imagine a CPU reading instructions
+   ---------------------------oo----oo--------------------------------------------------
+		               \[IP]/
+			         \/
+    -----------------------------|------------------------------------------------------
+   /000/000/000/000/001/101/010/ V /110/001/110/010/110/110/000/000/000/000/000/000/000/ <- Memory content.
+  /___/___/___/___/___/___/___/___/___/___/__ /___/___/___/___/___/___/___/___/___/___/
+   00  01  02  03  04  05  06  07  10  11  12  13  14  15  16  17  20  21  22  23  24  <- Memory adress
+
+EOF
+read
+
+cat <<EOF
+
+Back in the modern days of Slayers Try (93)
+Let's look at what some program VM (Virtual Memory) may look like:
+
+-----																	  -----
+|   |																	  |   |
+|   |																	  |   |
+|Dta|																	  |R  |
+|---|																	  |---|
+|Ins|																	  |R E|
+|Ins|																	  |R E|
+|---|																	  |---|
+|   |  <---- as you can see the memory, contain Data, and instructions. it's in the same memory.					  |   |
+|Dta|		       BUT, because CPU aknowledge that developer are inferior to machines, that add permision on they memory		  |RW |
+|   |		       so some part of the memory is Read Only, some other is RW, and some part of it is executable.			  |   |
+|---|		      (note that some weak-minded CPU, that trust dev, only to be abused after don't have thoses protections mechanisme)  |---|
+|Ins|																	  |R E|
+|---|																	  |---|
+|   |																	  |   |
+|   | Ins: Instructions															  |   |
+|   | Dta: Data										        The same memory with it's permision ->    |   |
+-----												R: read W: write E: exec          	  -----
+
+
+EOF
+read
+
+
+cat <<EOF
+
+     But program are store in files:
+
+     File containing RAW code (let's call it program.COM)
+       /
+      V
+    ______                             --------RAM--------
+   /Code /  ----> [load in memory] -->  |              |
+  /File /                               | [ File Here] | <-- It's load, but what about Memory permision ?
+ /     /                                |              |     Also, what about libraries ? It's just RAW code.
+ ------                                -------------------
+
+
+
+ If your binaries(programs), contain only code, then you can't set-up memory permisions automatically
+ the file need to contain the whole code.
+ syscall are usable though, calling code from the kernel is made using a CPU instruction (int 0x80/syscall)
+
+
+ But if you wonder, yes you could make a program that have for job to read other executable, and load them in memory with the good permision.
+ Even to read multiples files, and push the code of all files into memory, as 1 program.
+
+
+
+EOF
+read
+
+clear
+
+cat <<EOF
+                        /----------------------------------------- \\
+                        | I'm ELF, Linux Executable Format Protocol|
+                        | My job is to contain every information   |
+			| The OS need to load a binary             |
+                ___,@   \------------------------------------------/
+               /  <         /
+          ,_  /    \  _,   /
+      ?    \'/______\'/   /
+   ,_(_).  |; (e  e) ;|  /
+    \___ \ \/\   7  /\/ /  _\8/_
+        \/\   \'=='/---/  | /| /|
+         \ \___)--(_______|//|//|
+          \___  ()  _____/|/_|/_|
+             /  ()  \    '----'
+            /   ()   \				 Elf have typically 2 implementation:
+           '-.______.-'				 - 1 minimal implem inside the kernel itself, use when execve syscall is done (not that execve also handle shabang))
+         _    |_||_|    _			 - 1 in userland, implemented inside the libc, and generally in /lib/ld-linux.so.2, this one is more complex than
+        (@____) || (____@)			   the one inside kernel, and can load libraries.
+         \______||______/			 When execve is call (so everytime you do ./my_program), the kernel look at the begining of './my_program'
+						 if it's a script, call the interpretter. if it's an elf, read it with the elf implemented in the kernel
+
+EOF
+read
+
+cat <<EOF
+ELF have a LOT of option, but one interesting is: PT_INTERP
+PT_INTERP is a parametter of ELF format, that enable to choose another useland ELF interpretter to handle the currently read executable
+So this is how ELF kernel reader fallback to /lib/ld-linux.so.2.
+
+When a program is compiled statically, the ELF is read entierly by the kernel, otherwise, it's read by the interpretter specified by PT_INTERP.
+
+Stuff to know:
+- glibc is backward compatible (in theory), it mean an ELF compiled for linux 1.1.52 should work on modern distro
+- a program compiled on modern distro can not be read by an older ld-linux.so.2.
+- ld-linux.so.2 is a static program, meaning it doesn't need libc to be installed to be executed and can be executed by the kernel directly
+  - you can call ld-linux.so.2 directly, and use it to load a binary.
+  - you can use a redent ld-linux.so.2 on an system having an older glibc.
+- glibc use some advence kernel features. and have a minimum kernel requirement. So using last glibc ld-linux.so.2 on a too old system won't work
+- musl have it's own program loader "/ld-musl-x86_64.so.1".
+- when a program is dynamic, it require lib by they major version (so if it need libncursesw.so.6, it can't use libncursesw.so.6)
+- when a program is compiled statically, the compiler put the whole libc and other lib in the binary.
+
+most compiled languages use a libc (and so /lib/ld-linux.so.2). go is the only exeption.
+
+EOF
+read
+
+clear
+cat <<EOF
+Static vs Dynamic
+
+------------------------------------------------------------------------------------------------------------------
+ Dynamic						     |    Static
+------------------------------------------------------------------------------------------------------------------
+ Pro                                                         | Pro
+------------------------------------------------------------------------------------------------------------------
+ - share lib, less disk space                                | - Can't have dependancies issue
+ - can fix security in 1 lib				     |    (but can still have too old kernel)
+    without updating whole program			     | - more standard with go
+ - more standard for C/C++				     |
+------------------------------------------------------------------------------------------------------------------
+ Con							     | con
+------------------------------------------------------------------------------------------------------------------
+ - missing dependancies (OS take care of lib)                | - a security issue, go repackage the whole program
+ - missing old lib. (libX.so.2 instead of libX.so.1)         | - bloated (but who care ?)
+ - lib ABI conflict. (but it's rare)                         |
+------------------------------------------------------------------------------------------------------------------
+
+
+
+Static vs Dynamic packaging it's own bianry loader.
+
+--------------------------------------------------------------------------------------------
+Dynamic + ld-linux.so.2                     | Static
+--------------------------------------------------------------------------------------------
+ pro			                    | pro
+--------------------------------------------------------------------------------------------
+ - can be made from any program using ldd   | faster to startup (like less than 1ms faster)
+			                    | slightly smaller (like less than 10ko smaller)
+--------------------------------------------------------------------------------------------
+ con                                        | con
+--------------------------------------------------------------------------------------------
+ - need to create a script/                 | require .a libs.
+    self extracted bin                      |
+ - need to pay attention to lisence of libs |
+--------------------------------------------------------------------------------------------
+But ther're mostly the same, seriously, if you don't live in the 90s (like ken), this debate is useless
+
+for Dynamic + ld-linux.so.2, go see
+https://gitlab.com/mojo42/mojopack/raw/master/mojopack.sh
+http://joeyh.name/blog/entry/completely_linux_distribution-independent_packaging/
+
+EOF
+read
+
+clear
+cat <<EOF
+
+
+
+
+                    | |
+   ------------------------
+  /   The real problem     \\
+ |    _    _  of static    |
+ |   /=\""/=\              |
+ |  (=(0_0 |=)__           |
+ |   \_\ _/_/   )    /--\\  |
+ |     /_/   _  /\  |    | |
+ |     |/ |\ || |   |    | |
+ |       ~ ~  ~     |    | |
+ ---------------------------
+EOF
+read
+clear
+tput setaf 2
+cat <<EOF
+
+
+
+
+                    | |
+   -----------------------
+  /    The real problem   \\
+ |    _    _  of static    |
+ |   /=\""/=\              |
+ |  (=(0_0 |=)__           |
+ |   \_\ _/_/ NV)    /--\\  |
+ |     /_/ mesa /\  |    | |
+ |     |/ |\ || |   |    | |
+ |       ~ ~  ~     |    | |
+ ---------------------------
+
+
+[uso@ip-10-9-21-198 oapi-cli]$ ldd /usr/lib/libGL.so
+        linux-vdso.so.1 (0x00007ffeda9da000)
+        libGLdispatch.so.0 => /usr/lib/libGLdispatch.so.0 (0x00007f98126b0000)
+        libGLX.so.0 => /usr/lib/libGLX.so.0 (0x00007f981267e000)
+        libc.so.6 => /usr/lib/libc.so.6 (0x00007f9812497000)
+        libX11.so.6 => /usr/lib/libX11.so.6 (0x00007f9812354000)
+        /usr/lib64/ld-linux-x86-64.so.2 (0x00007f981280d000)
+        libxcb.so.1 => /usr/lib/libxcb.so.1 (0x00007f9812329000)
+        libXau.so.6 => /usr/lib/libXau.so.6 (0x00007f9812324000)
+        libXdmcp.so.6 => /usr/lib/libXdmcp.so.6 (0x00007f981231a000)
+
+EOF
+tput sgr0
+read
+
+clear
+cat <<EOF
+Your new friend: LD_LIBRARY_PATH
+
+LD_LIBRARY_PATH is use by ld-linux-x86-64.so.2, to set priority order to lib to load.
+doesn't work for libc, but work for other lib, so you can simply package your own lib,
+and start your program using a small script setting LD_LIBRARY_PATH for you:
+
+[uso@ip-10-9-21-198 presentation]$ ldd /bin/ls
+        linux-vdso.so.1 (0x00007fff37f40000)
+        libcap.so.2 => /usr/lib/libcap.so.2 (0x00007fdde573b000) <-- is in /usr/lib/
+        libc.so.6 => /usr/lib/libc.so.6 (0x00007fdde5554000)
+        /lib64/ld-linux-x86-64.so.2 => /usr/lib64/ld-linux-x86-64.so.2 (0x00007fdde578a000)
+[uso@ip-10-9-21-198 presentation]$ ls lib*
+libcap.so.2
+[uso@ip-10-9-21-198 presentation]$ LD_LIBRARY_PATH=./ ldd /bin/ls
+        linux-vdso.so.1 (0x00007ffcc02f7000)
+        libcap.so.2 => ./libcap.so.2 (0x00007fc4a9530000)  <--- is in ./libcap.so.2
+        libc.so.6 => /usr/lib/libc.so.6 (0x00007fc4a932c000)
+        /lib64/ld-linux-x86-64.so.2 => /usr/lib64/ld-linux-x86-64.so.2 (0x00007fc4a9562000)
+
+
+
+Major con of this methode, is that, glibc been backward compatible, a program package using this methode
+will work only on system having a system with a glibc at last as recent as the one use to package your program.
+So a thing package on the deprecated and outdated Debian 11 will work on the glorious Arch,
+but the same thing package on the absolutely fabulous Arch Linux BTW, will not on the antique Debian 11.
+
+https://gist.github.com/flibitijibibo/b67910842ab95bb3decdf89d1502de88
+EOF
+
+read
+
+slide "BTW Appimage is basically LD_LIBRARY_PATH methode on steroide\n"
+
+clear
+cat <<EOF
+
+                      (
+                     (  ) (
+                      )    )
+         |||||||     (  ( (
+        ( O   O )        )
+ ____oOO___(_)___OOo____(
+(_______________________)
+           FLATPAK
+
+It's like a system in the system.
+Similar to LD_LIBRARY_PATH methode, but lib can be shared between multiples flatpak packages.
+
+EOF
+
+read
+
+slide "The missing:\n" "deb/rpm other system package\n" "interpreted stuff (it's the interpretter job)"
+
+
