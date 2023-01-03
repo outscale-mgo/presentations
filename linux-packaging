@@ -24,7 +24,7 @@ Some stuff about memory
 |---|
 |ZSH|
 |   |						But in the futur when Zeta Gundam air on TV (85)
-|---|						Because developper are sub-humain-trash unable to create programs that share they memory space with another program
+|---|						Because dev are sub-humain-trash unable to create programs that share they memory with another program
 |Ema|					        We create virtual memory (ok it's more Eightman (63) time in fact, but went mainstream in zeta gundam time).
 |cs |						      Let me show you:
 |---|							    /------------- That's my computer memory
@@ -68,7 +68,7 @@ cat <<EOF
 		               \[IP]/
 			         \/
     -----------------------------|------------------------------------------------------
-   /000/000/000/000/001/101/010/ V /110/001/110/010/110/110/000/000/000/000/000/000/000/ <- Memory content.
+   /000/000/000/000/001/101/010/ V /110/001/110/010/110/110/000/000/000/000/000/000/000/ <- Memory content, mix of instructions and data.
   /___/___/___/___/___/___/___/___/___/___/__ /___/___/___/___/___/___/___/___/___/___/
    00  01  02  03  04  05  06  07  10  11  12  13  14  15  16  17  20  21  22  23  24  <- Memory adress
 
@@ -106,9 +106,9 @@ read
 
 cat <<EOF
 
-     But program are store in files:
+     But program are store in files, so what if we store Raw code in a file:
 
-     File containing RAW code (let's call it program.COM)
+     File containing Raw code (let's call it program.COM)
        /
       V
     ______                             --------RAM--------
@@ -121,7 +121,7 @@ cat <<EOF
 
  If your binaries(programs), contain only code, then you can't set-up memory permisions automatically
  the file need to contain the whole code.
- syscall are usable though, calling code from the kernel is made using a CPU instruction (int 0x80/syscall)
+ syscall are usable though, calling code from the kernel is made using a CPU instruction (int 0x80/sysenter/syscall)
 
 
  But if you wonder, yes you could make a program that have for job to read other executable, and load them in memory with the good permision.
@@ -132,8 +132,6 @@ cat <<EOF
 EOF
 read
 
-clear
-
 cat <<EOF
                         /----------------------------------------- \\
                         | I'm ELF, Linux Executable Format Protocol|
@@ -142,13 +140,13 @@ cat <<EOF
                 ___,@   \------------------------------------------/
                /  <         /
           ,_  /    \  _,   /
-      ?    \'/______\'/   /
-   ,_(_).  |; (e  e) ;|  /
-    \___ \ \/\   7  /\/ /  _\8/_
-        \/\   \'=='/---/  | /| /|
-         \ \___)--(_______|//|//|
-          \___  ()  _____/|/_|/_|
-             /  ()  \    '----'
+      ?    \'/______\'/   /                   ------
+   ,_(_).  |; (e  e) ;|  /	            / ELF   /
+    \___ \ \/\   7  /\/ /  _\8/_           / STUFF /
+        \/\   \'=='/---/  | /| /|         /------ /
+         \ \___)--(_______|//|//|        / CODE  /
+          \___  ()  _____/|/_|/_|       /       /
+             /  ()  \    '----'	        -------
             /   ()   \				 Elf have typically 2 implementation:
            '-.______.-'				 - 1 minimal implem inside the kernel itself, use when execve syscall is done (not that execve also handle shabang))
          _    |_||_|    _			 - 1 in userland, implemented inside the libc, and generally in /lib/ld-linux.so.2, this one is more complex than
@@ -178,6 +176,8 @@ Stuff to know:
 - when a program is compiled statically, the compiler put the whole libc and other lib in the binary.
 
 most compiled languages use a libc (and so /lib/ld-linux.so.2). go is the only exeption.
+
+
 
 EOF
 read
