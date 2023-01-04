@@ -18,32 +18,36 @@ cat <<EOF
 |Ker|
 |el |
 |---| <--- that's my computer RAM, and this is where my programs are store when executed...
-|Sys|		in the old days (like when tetsujin-28 go drama was still on TV, and Attack no1 was not even a manga)
-|tem|		program used to have access to the whole computer memory.
+|Sys|		in the old days program used to have access to the whole computer memory.
+|tem|
 |D  |
 |---|
 |ZSH|
-|   |						But in the futur when Zeta Gundam air on TV (85)
-|---|						Because dev are sub-humain-trash unable to create programs that share they memory with another program
-|Ema|					        We create virtual memory (ok it's more Eightman (63) time in fact, but went mainstream in zeta gundam time).
+|   |						But in the futur when Zeta Gundam air on TV (1985) we create virtual memory
+|---|
+|Ema|
 |cs |						      Let me show you:
-|---|							    /------------- That's my computer memory
-|Pul|							 00 <--- that's the beginning of my memory
-|sau|							----
-|dio|							|  |
+|---|	             That's my computer memory
+|Pul|					      \_____ 	 00 <--- that's the beginning of my memory
+|sau|						    \__ ----
+|dio|						       \|  |
 |   |						 2048 ->|--|
 |   |							|Pr| < that's where my program is store in the ram
-|   |							|  |   here between the adress 2048 and 6144, it's the program physical memory
-|   |						 6144 ->|--|
-|   |						        ----
------						        8192			  But my program think its memory look like this, it's the memory it manipulate
-0xffffffff														   /      so this whole fake memory,
+|   |							|  |   between adress 2048 and 6144, it's the program physical memory
+-----						 6144 ->|--|
+0xffffffff					        ----
+						        8192
+EOF
+read
+cat <<EOF
+									  But my program think its memory look like this, it's the memory it manipulate
+															   /      so this whole fake memory,
 												 00			  /       is its "Virtual memory"
 												----			 /
-												|PD|  <------------------
-												|ra|
-												|ot|
-												|ga|
+												|Pr|  <------------------
+												|og|
+												|Da|
+												|Ta|
 												|  |
 											        ----
 											        8192
@@ -56,7 +60,7 @@ cat <<EOF
 
 
 
-							(please don't talk about CPU cache)
+						    (Note: for simplification, I'll ignore CPU mechanisme here)
 EOF
 read
 
@@ -88,10 +92,10 @@ Let's look at what some program VM (Virtual Memory) may look like:
 |Ins|																	  |R E|
 |Ins|																	  |R E|
 |---|																	  |---|
-|   |  <---- as you can see the memory, contain Data, and instructions. it's in the same memory.					  |   |
-|Dta|		       BUT, because CPU aknowledge that developer are inferior to machines, that add permision on they memory		  |RW |
-|   |		       so some part of the memory is Read Only, some other is RW, and some part of it is executable.			  |   |
-|---|		      (note that some weak-minded CPU, that trust dev, only to be abused after don't have thoses protections mechanisme)  |---|
+|   |  <---- memory, contain Data, and instructions in the same memory.                          					  |   |
+|Dta|		       because CPU aknowledge that developer are inferior to machines, that add permision on they memory		  |RW |
+|   |																	  |   |
+|---|																	  |---|
 |Ins|																	  |R E|
 |---|																	  |---|
 |   |																	  |   |
@@ -106,7 +110,7 @@ read
 
 cat <<EOF
 
-     But program are store in files, so what if we store Raw code in a file:
+     But program are store in files (not RAM), so what if we store Raw code in a file:
 
      File containing Raw code (let's call it program.COM)
        /
@@ -117,16 +121,33 @@ cat <<EOF
  /     /                                |              |     Also, what about libraries ? It's just RAW code.
  ------                                -------------------
 
+EOF
+read
 
+cat <<EOF
+ If your programs, contain only code:
+ - it doesn't contain memory permisions
+ - no information how to load lib.
+ syscall are usable, calling code from kernel is made using CPU instructions (int 0x80/sysenter/syscall)
+EOF
 
- If your binaries(programs), contain only code, then you can't set-up memory permisions automatically
- the file need to contain the whole code.
- syscall are usable though, calling code from the kernel is made using a CPU instruction (int 0x80/sysenter/syscall)
+cat <<EOF
+ If you wonder, yes you could make a program like this.
 
-
- But if you wonder, yes you could make a program that have for job to read other executable, and load them in memory with the good permision.
- Even to read multiples files, and push the code of all files into memory, as 1 program.
-
+   [kenrel load program] ->   -------- -> [program set up permision] -> --------  -> [load lib + prog ] ->  --------
+			      | ins  |				        | ins  |			    | Wine |
+			      |  RWE |				        |  R E |			    |----- |
+			      | Data |				        | Data |			    | DLL  |
+			      |  RWE |				        |  RW  |			    |------|
+			      --------				        --------			    |XD.exe|
+													    |      |
+													    |      |
+													    |      |
+													    --------
+ But then it need to be call like this:
+ wine [wine ARG] XD.exe [XD ARG]
+ or like this
+ php kattarshians.php
 
 
 EOF
@@ -148,35 +169,46 @@ cat <<EOF
           \___  ()  _____/|/_|/_|       /       /
              /  ()  \    '----'	        -------
             /   ()   \				 Elf have typically 2 implementation:
-           '-.______.-'				 - 1 minimal implem inside the kernel itself, use when execve syscall is done (not that execve also handle shabang))
-         _    |_||_|    _			 - 1 in userland, implemented inside the libc, and generally in /lib/ld-linux.so.2, this one is more complex than
-        (@____) || (____@)			   the one inside kernel, and can load libraries.
-         \______||______/			 When execve is call (so everytime you do ./my_program), the kernel look at the begining of './my_program'
-						 if it's a script, call the interpretter. if it's an elf, read it with the elf implemented in the kernel
+           '-.______.-'				 1 minimal implem inside the kernel itself:
+         _    |_||_|    _			 - use with execve
+        (@____) || (____@)			 - can not load libraries
+         \______||______/			 1 more complex in userland:
+						 - implemented inside the libc (/lib/ld-linux.so.2)
+						 - can load lib, and do versioning
+						 - load the libc as a minimal runtime for your program
 
+						 When execve is call (ex ./my_program), kernel look at begining './my_program'
+						 if it's a script, call the interpretter.
+						 if it's an elf, read it with the elf implemented in the kernel
 EOF
 read
 
 cat <<EOF
-ELF have a LOT of option, but one interesting is: PT_INTERP
-PT_INTERP is a parametter of ELF format, that enable to choose another useland ELF interpretter to handle the currently read executable
-So this is how ELF kernel reader fallback to /lib/ld-linux.so.2.
+ELF have a LOT of option, one interesting is: PT_INTERP
+PT_INTERP is a parametter of ELF format,
+it enable to choose another useland ELF interpretter to handle currently read executable
+compiller set this for every Dynamically compilled program
+This is how ELF kernel reader fallback to /lib/ld-linux.so.2.
 
-When a program is compiled statically, the ELF is read entierly by the kernel, otherwise, it's read by the interpretter specified by PT_INTERP.
+Reminder:
+Static: 1 binary file load by kernel
+Dynamic: multiple binaries files load by libc
+EOF
+read
 
+cat <<EOF
 Stuff to know:
-- glibc is backward compatible (in theory), it mean an ELF compiled for linux 1.1.52 should work on modern distro
+- glibc is backward compatible (ELF compiled for linux 1.1.52 should work on modern distro)
 - a program compiled on modern distro can not be read by an older ld-linux.so.2.
 - ld-linux.so.2 is a static program, meaning it doesn't need libc to be installed to be executed and can be executed by the kernel directly
   - you can call ld-linux.so.2 directly, and use it to load a binary.
   - you can use a redent ld-linux.so.2 on an system having an older glibc.
-- glibc use some advence kernel features. and have a minimum kernel requirement. So using last glibc ld-linux.so.2 on a too old system won't work
 - musl have it's own program loader "/ld-musl-x86_64.so.1".
+- glibc/musl use some advence kernel features. and have a minimum kernel requirement. (using last glibc ld-linux.so.2 on old kernel won't work)
 - when a program is dynamic, it require lib by they major version (so if it need libncursesw.so.6, it can't use libncursesw.so.6)
 - when a program is compiled statically, the compiler put the whole libc and other lib in the binary.
 
-most compiled languages use a libc (and so /lib/ld-linux.so.2). go is the only exeption.
-
+most compiled languages use a libc (so /lib/ld-linux.so.2). go is the only exeption.
 
 
 EOF
@@ -202,9 +234,10 @@ Static vs Dynamic
  - missing old lib. (libX.so.2 instead of libX.so.1)         | - bloated (but who care ?)
  - lib ABI conflict. (but it's rare)                         |
 ------------------------------------------------------------------------------------------------------------------
+EOF
+read
 
-
-
+cat <<EOF
 Static vs Dynamic packaging it's own bianry loader.
 
 --------------------------------------------------------------------------------------------
@@ -221,7 +254,8 @@ Dynamic + ld-linux.so.2                     | Static
     self extracted bin                      |
  - need to pay attention to lisence of libs |
 --------------------------------------------------------------------------------------------
-But ther're mostly the same, seriously, if you don't live in the 90s (like ken), this debate is useless
+
+ther're mostly the same, seriously, if you don't live in the 90s (like ken), this debate is useless
 
 for Dynamic + ld-linux.so.2, go see
 https://gitlab.com/mojo42/mojopack/raw/master/mojopack.sh
@@ -288,10 +322,14 @@ clear
 cat <<EOF
 Your new friend: LD_LIBRARY_PATH
 
-LD_LIBRARY_PATH is use by ld-linux-x86-64.so.2, to set priority order to lib to load.
-doesn't work for libc, but work for other lib, so you can simply package your own lib,
-and start your program using a small script setting LD_LIBRARY_PATH for you:
+LD_LIBRARY_PATH is use by ld-linux-x86-64.so.2
+It set priority order to lib to load.
+doesn't work for libc, but work for other lib
+you can simply package your own lib, start your program with shell script setting LD_LIBRARY_PATH for you:
+EOF
+read
 
+cat <<EOF
 [uso@ip-10-9-21-198 presentation]$ ldd /bin/ls
         linux-vdso.so.1 (0x00007fff37f40000)
         libcap.so.2 => /usr/lib/libcap.so.2 (0x00007fdde573b000) <-- is in /usr/lib/
