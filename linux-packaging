@@ -200,12 +200,12 @@ cat <<EOF
 Stuff to know:
 - glibc is backward compatible (ELF compiled for linux 1.1.52 should work on modern distro)
 - a program compiled on modern distro can not be read by an older ld-linux.so.2.
-- ld-linux.so.2 is a static program, meaning it doesn't need libc to be installed to be executed and can be executed by the kernel directly
-  - you can call ld-linux.so.2 directly, and use it to load a binary.
-  - you can use a redent ld-linux.so.2 on an system having an older glibc.
+- ld-linux.so.2 is a static program (doesn't need ld-linux.so.2)
+  - you can call ld-linux.so.2 directly, and use it to load a binaries.
+  - you can use a recent ld-linux.so.2 on an system having an older glibc.
 - musl have it's own program loader "/ld-musl-x86_64.so.1".
-- glibc/musl use some advence kernel features. and have a minimum kernel requirement. (using last glibc ld-linux.so.2 on old kernel won't work)
-- when a program is dynamic, it require lib by they major version (so if it need libncursesw.so.6, it can't use libncursesw.so.6)
+- glibc/musl use advance kernel features. have a minimum requirement. (using new glibc ld-linux.so.2 on old kernel won't work)
+- when a program is dynamic, it require lib by they major version (so if it need libncursesw.so.5, it can't use libncursesw.so.6)
 - when a program is compiled statically, the compiler put the whole libc and other lib in the binary.
 
 most compiled languages use a libc (so /lib/ld-linux.so.2). go is the only exeption.
@@ -239,6 +239,9 @@ read
 
 cat <<EOF
 Static vs Dynamic packaging it's own bianry loader.
+
+ex:
+./ld-linux.so.2 --library-path libs/dir/containing/libc ./program
 
 --------------------------------------------------------------------------------------------
 Dynamic + ld-linux.so.2                     | Static
@@ -350,6 +353,7 @@ will work only on system having a system with a glibc at last as recent as the o
 So a thing package on the deprecated and outdated Debian 11 will work on the glorious Arch,
 but the same thing package on the absolutely fabulous Arch Linux BTW, will not on the antique Debian 11.
 
+more info:
 https://gist.github.com/flibitijibibo/b67910842ab95bb3decdf89d1502de88
 EOF
 
