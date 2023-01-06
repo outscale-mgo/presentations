@@ -5,92 +5,11 @@ slide()
     txt="$@"
     clear
     echo -e "$txt" | ponysay +f gnupony
-    read
 }
 
 slide "so let's start by the begining...\n" "what's a package ?\n" "is it a binary\n" "what's a binary\n" "what is code?\n" "how is a program executed\n"
 
-clear
-cat <<EOF
-                                                             Some stuff about memory
-0x00000000
------
-|Ker|
-|el |
-|---| <--- that's my computer RAM, and this is where my programs are store when executed...
-|Sys|		in the old days program used to have access to the whole computer memory.
-|tem|
-|D  |
-|---|
-|ZSH|
-|   |
-|---|
-|Ema|
-|cs |
-|---|
-|Pul|
-|sau|
-|dio|
-|   |
-|   |
-|   |
------
-0xffffffff
-EOF
-read
-clear
-cat <<EOF
-                                                             Some stuff about memory
-0x00000000
------
-|Ker|
-|el |
-|---| <--- that's my computer RAM, and this is where my programs are store when executed...
-|Sys|		in the old days program used to have access to the whole computer memory.
-|tem|
-|D  |
-|---|
-|ZSH|
-|   |						But in the futur when Zeta Gundam air on TV (1985) we create virtual memory
-|---|
-|Ema|
-|cs |						      Let me show you:
-|---|	             That's my computer memory
-|Pul|					      \_____ 	 00 <--- that's the beginning of my memory
-|sau|						    \__ ----
-|dio|						       \|  |
-|   |						 2048 ->|--|
-|   |							|Pr| < that's where my program is store in the ram
-|   |							|  |   between adress 2048 and 6144, it's the program physical memory
------						 6144 ->|--|
-0xffffffff					        ----
-						        8192
-EOF
-
-read
-cat <<EOF
-									  But my program think its memory look like this, it's the memory it manipulate
-															   /      so this whole fake memory,
-												 00			  /       is its "Virtual memory"
-												----			 /
-												|Pr|  <------------------
-												|og|
-												|Da|
-												|Ta|
-												|  |
-											        ----
-											        8192
-
-							This is the diference between Physicall and Virtual Memory
-							If anything remmenber 1 thing: programs on modern architecture, run on they own memory space,
-							thinking they are alone.
-
-
-
-
-
-						    (Note: for simplification, I'll ignore CPU mechanisme here)
-EOF
+echo "(NOTE: a lot of things I'll say are lie, but true enough)"
 read
 
 clear
@@ -168,6 +87,19 @@ read
 clear
 
 cat <<EOF
+			    Kernel Slide Program
+
+
+            _____________[start]__________
+   _____ <-'  ________                   '--  ______
+  /    /     /       /                       /      \   <----> [ Hard Drive ]
+ /bin / <-> /runtime/ <= Instruction-CPU => | Kernel |
+ -----      --------                         \______/  <------> [ Display ]
+EOF
+read
+clear
+
+cat <<EOF
 
      But program are store in files (not RAM), so what if we store Raw code in a file:
 
@@ -213,7 +145,7 @@ clear
 
 cat <<EOF
                         /----------------------------------------- \\
-                        | I'm ELF, Linux Executable Format Protocol|
+                        | I'm ELF, Executable and Linkable Format  |
                         | My job is to contain every information   |
 			| The OS need to load a binary             |
                 ___,@   \------------------------------------------/
@@ -257,25 +189,41 @@ This is how ELF kernel reader fallback to /lib/ld-linux.so.2.
 /_____________/				 |/_____________/    |			 |/_____________/    |	   |  ./bin    |
 					 |___________________|			 |___________________|	   |           |
 													   |           |
-Reminder:												   |           |
-Static: 1 binary file load by kernel									   -------------
+													   -------------
+EOF
+read
+clear
+cat <<EOF
+Reminder:
+Static: 1 binary file load by kernel
 Dynamic: multiple binaries files load by libc
+          Static				Dynamic
+ -------------------------		 -------------------------
+ |   _________________  |		 |    _____  ____       |
+ |   / ______ ____  /   |		 |   /libc/ /lib/       |
+ |  / /libc/ /lib/ /    |		 |   ----- /___/        |
+ | / ------ /___/ /     |		 |    ---------         |
+ |/   Program    /      |		 |  / Program /         |
+ |----------------      |		 |  ---------           |
+ -------------------------		 -------------------------
 EOF
 read
 clear
 
 cat <<EOF
 Stuff to know:
-- glibc is backward compatible (ELF compiled for linux 1.1.52 should work on modern distro)
-- a program compiled on modern distro can not be read by an older ld-linux.so.2.
-- musl have it's own program loader "/ld-musl-x86_64.so.1".
-- ld-XXX.so.X are static program (can be run from kernel)
-  - you can call ld-linux.so.2 directly, and use it to load a binaries.
-  - you can use a recent ld-linux.so.2 on an system having an older glibc.
-- glibc/musl use advance kernel features. have a minimum requirement. (using new glibc ld-linux.so.2 on old kernel won't work)
 - when a program is dynamic, it require lib by they major version (so if it need libncursesw.so.5, it can't use libncursesw.so.6)
 - when a program is compiled statically, the compiler put the whole libc and other lib in the binary.
+- musl have it's own program loader "/ld-musl-x86_64.so.1".
 
+  |---- linux 1.1.52 -----|        |----- linux 3.5 -------|         |--------  5.2 ---------|
+  |		          |	   |                       | 	     |                       |
+  |(Dyn 1.1.52)       [OK]|	   |(Dyn 1.1.52)  [OK+lib?]| 	     |(Dyn 1.1.52)  [OK+lib?]|
+  |(St 1.1.52)        [OK]|	   |(St 1.1.52)    [OK+CVE]| 	     |(St 1.1.52)    [OK+CVE]|
+  |(St 5.2)           [KO]|	   |(St 5.2)           [OK]| 	     |(St 5.2)           [OK]|
+  |(Dyn 5.2)          [KO]|	   |(Dyn 5.2)          [KO]| 	     |(Dyn 5.2)          [OK]|
+  |(ld-linux.so.2|5.2)[KO]|	   |(ld-linux.so.2|5.2)[OK]| 	     |(ld-linux.so.2|5.2)[OK]|
+  -------------------------	   ------------------------- 	     -------------------------
 most compiled languages use a libc (so /lib/ld-linux.so.2). go is the only exeption.
 
 
