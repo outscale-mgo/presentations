@@ -92,14 +92,16 @@ cat <<EOF
 
             _____________[start]__________
    _____ <-'  ________                   '--  ______
-  /    /     /       /                       /      \   <----> [ Hard Drive ]
+  /    /-??--/       /                       /      \   <----> [ Hard Drive ]
  /bin / <-> /runtime/ <== Interupt CPU ===> | Kernel |
- -----      --------                         \______/  <------> [ Display ]
+ ------??-----------                         \______/  <------> [ Display ]
 
 
  Interupt CPU: an angry guy comming to your open space...
  But for a CPU.
 
+ RTFM:
+ man syscall
 EOF
 read
 clear
