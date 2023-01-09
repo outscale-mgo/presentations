@@ -7,7 +7,7 @@ slide()
     echo -e "$txt" | ponysay +f gnupony
 }
 
-slide "so let's start by the begining...\n" "what's a package ?\n" "is it a binary\n" "what's a binary\n" "what is code?\n" "how is a program executed\n"
+slide "About the underlayer Magic of my binary"
 
 echo "(NOTE: a lot of things I'll say are lie, but true enough)"
 read
@@ -93,8 +93,13 @@ cat <<EOF
             _____________[start]__________
    _____ <-'  ________                   '--  ______
   /    /     /       /                       /      \   <----> [ Hard Drive ]
- /bin / <-> /runtime/ <= Instruction-CPU => | Kernel |
+ /bin / <-> /runtime/ <== Interupt CPU ===> | Kernel |
  -----      --------                         \______/  <------> [ Display ]
+
+
+ Interupt CPU: an angry guy comming to your open space...
+ But for a CPU.
+
 EOF
 read
 clear
@@ -166,10 +171,6 @@ cat <<EOF
 						 - implemented inside the libc (/lib/ld-linux.so.2)
 						 - can load lib, and do versioning
 						 - load the libc as a minimal runtime for your program
-
-						 When execve is call (ex ./my_program), kernel look at begining './my_program'
-						 if it's a script, call the interpretter.
-						 if it's an elf, read it with the elf implemented in the kernel
 EOF
 read
 clear
@@ -243,6 +244,7 @@ Static vs Dynamic
  - can fix security in 1 lib				     |    (but can still have too old kernel)
     without updating whole program			     | - more standard with go
  - more standard for C/C++				     |
+ - Hiden symbole, in a library				     |
 ------------------------------------------------------------------------------------------------------------------
  Con							     | con
 ------------------------------------------------------------------------------------------------------------------
@@ -266,6 +268,7 @@ Dynamic + ld-linux.so.2                     | Static
 --------------------------------------------------------------------------------------------
  - can be made from any program using ldd   | faster to startup (like less than 1ms faster)
 			                    | slightly smaller (like less than 10ko smaller)
+ - Hiden symbole, in a library		    |
 --------------------------------------------------------------------------------------------
  con                                        | con
 --------------------------------------------------------------------------------------------
