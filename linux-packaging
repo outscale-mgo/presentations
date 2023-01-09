@@ -7,7 +7,7 @@ slide()
     echo -e "$txt" | ponysay +f gnupony
 }
 
-slide "About the underlayer Magic of my binary"
+slide "About the underlayer Magic of my binary\n" "and how it concern packaging"
 
 echo "(NOTE: a lot of things I'll say are lie, but true enough)"
 read
